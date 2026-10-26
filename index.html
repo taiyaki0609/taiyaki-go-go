@@ -1,0 +1,193 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10131f">
+  <title>Taiyaki Go Go!</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      color: #f4f6ff;
+      background: #10131f;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+
+    main {
+      width: 100%;
+      max-width: 680px;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: clamp(34px, 7vw, 58px);
+      font-weight: 800;
+      letter-spacing: -2px;
+      margin-bottom: 10px;
+    }
+
+    .logo span { color: #ffb547; }
+
+    .subtitle {
+      color: #a8aec4;
+      margin-bottom: 36px;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid #353b51;
+      background: #1b2030;
+      border-radius: 18px;
+    }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      color: white;
+      background: transparent;
+      padding: 12px;
+      font-size: 16px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 18px;
+      color: #171717;
+      background: #ffb547;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover { background: #ffc66e; }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .actions button {
+      color: #e8ebf7;
+      background: #252b3e;
+      border: 1px solid #353b51;
+    }
+
+    .actions button:hover { background: #343c54; }
+
+    .note {
+      color: #9299b1;
+      font-size: 13px;
+      line-height: 1.8;
+      margin-top: 32px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="logo">Taiyaki <span>Go Go!</span></div>
+    <p class="subtitle">軽く、速く、自由にウェブを楽しもう。</p>
+
+    <form id="searchForm" class="search-box">
+      <input
+        id="query"
+        type="text"
+        placeholder="キーワードやURLを入力..."
+        aria-label="検索キーワードまたはURL"
+        required
+      >
+      <button type="submit">検索</button>
+    </form>
+
+    <div class="actions">
+      <button type="button" id="googleButton">Google検索</button>
+      <button type="button" id="embedButton">埋め込みビュー</button>
+      <button type="button" id="proxyButton">匿名ビュー</button>
+    </div>
+
+    <p class="note">
+      シンプルな設計で、快適なウェブ体験を。<br>
+      匿名ビューと埋め込みビューは、次の制作ステップで機能を追加します。
+    </p>
+  </main>
+
+  <script>
+    const query = document.getElementById("query");
+
+    function getInput() {
+      const value = query.value.trim();
+      if (!value) return null;
+      return value;
+    }
+
+    function searchGoogle() {
+      const value = getInput();
+      if (!value) {
+        query.focus();
+        return;
+      }
+
+      const url = "https://www.google.com/search?q="
+        + encodeURIComponent(value);
+
+      window.location.href = url;
+    }
+
+    document.getElementById("searchForm")
+      .addEventListener("submit", function(event) {
+        event.preventDefault();
+        searchGoogle();
+      });
+
+    document.getElementById("googleButton")
+      .addEventListener("click", searchGoogle);
+
+    document.getElementById("embedButton")
+      .addEventListener("click", function() {
+        const value = getInput();
+        if (!value) {
+          query.focus();
+          return;
+        }
+
+        const url = /^https?:\/\//i.test(value)
+          ? value
+          : "https://" + value;
+
+        window.location.href = "embed.html?url="
+          + encodeURIComponent(url);
+      });
+
+    document.getElementById("proxyButton")
+      .addEventListener("click", function() {
+        const value = getInput();
+        if (!value) {
+          query.focus();
+          return;
+        }
+
+        const url = /^https?:\/\//i.test(value)
+          ? value
+          : "https://" + value;
+
+        window.location.href = "viewer?url="
+          + encodeURIComponent(url);
+      });
+  </script>
+</body>
+</html>
