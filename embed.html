@@ -1,0 +1,126 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Taiyaki Go Go! - 埋め込みビュー</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #10131f;
+      color: #f4f6ff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 12px;
+      display: flex;
+      gap: 10px;
+      background: #1b2030;
+      align-items: center;
+    }
+
+    a { color: #ffb547; text-decoration: none; }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid #353b51;
+      border-radius: 10px;
+      background: #10131f;
+      color: white;
+      font-size: 15px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      background: #ffb547;
+      color: #171717;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #notice {
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #c1c7da;
+    }
+
+    iframe {
+      flex: 1;
+      width: 100%;
+      min-height: 65vh;
+      border: 0;
+      background: white;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="./">← 戻る</a>
+    <input id="url" placeholder="https://example.com">
+    <button id="open">開く</button>
+  </header>
+
+  <div id="notice">
+    サイトによっては、埋め込み表示が禁止されています。
+    表示できない場合は、新しいタブで開いてください。
+  </div>
+
+  <iframe id="frame" title="ウェブサイトの埋め込み表示"></iframe>
+
+  <script>
+    const input = document.getElementById("url");
+    const frame = document.getElementById("frame");
+    const notice = document.getElementById("notice");
+
+    function openPage() {
+      let value = input.value.trim();
+      if (!value) return;
+
+      if (!/^https?:\/\//i.test(value)) {
+        value = "https://" + value;
+      }
+
+      try {
+        const parsed = new URL(value);
+        if (!["http:", "https:"].includes(parsed.protocol)) {
+          throw new Error("Invalid protocol");
+        }
+
+        input.value = parsed.href;
+        frame.src = parsed.href;
+
+        notice.innerHTML =
+          '表示できない場合は <a id="newTab" target="_blank" rel="noopener noreferrer">新しいタブで開く</a> を試してください。';
+
+        document.getElementById("newTab").href = parsed.href;
+      } catch {
+        notice.textContent = "URLを確認してください。";
+      }
+    }
+
+    document.getElementById("open")
+      .addEventListener("click", openPage);
+
+    input.addEventListener("keydown", event => {
+      if (event.key === "Enter") openPage();
+    });
+
+    const initial = new URLSearchParams(location.search).get("url");
+    if (initial) {
+      input.value = initial;
+      openPage();
+    }
+  </script>
+</body>
+</html>
